@@ -2,39 +2,26 @@ package main
 
 import (
 	"bufio"
-	"errors"
 	"fmt"
 	"os"
+	"strconv"
+	"strings"
 )
 
 func main() {
 	fmt.Println("Part 1: ")
-	partOne()
+	calc(1)
+	fmt.Println("--------------------\nPart 2: ")
+	calc(2)
 }
 
-func partOne() {
-	stacks, err := readInStartingCrates()
-	if err != nil {
-		fmt.Println("There was an error reading in the starting crates.")
-		return
-	}
-
-	for i := 0; i < 9; i++ {
-		fmt.Println("___________________\nStack: ", i)
-		for j := 0; j < len(stacks[i]); j++ {
-			fmt.Println("Value: ", stacks[i][j])
-		}
-	}
-}
-
-// interface returned is [9]Stack
-func readInStartingCrates() ([9][]string, error) {
+func calc(part int) {
 	stacks := [9][]string{}
 
 	file, err := os.Open("5input.txt")
 	if err != nil {
 		fmt.Println("Error opening file.")
-		return stacks, errors.New("error opening file")
+		return
 	}
 	defer file.Close()
 
@@ -44,7 +31,7 @@ func readInStartingCrates() ([9][]string, error) {
 		line := scanner.Text()
 
 		if line[0] == byte(' ') {
-			return stacks, nil
+			break
 		}
 
 		stackIndex := 0
@@ -54,21 +41,76 @@ func readInStartingCrates() ([9][]string, error) {
 			}
 			stackIndex++
 		}
-
-		// for i := 0; i < 9; i++ {
-		// 	stacks[i] = reverseSlice(stacks[i])
-		// }
-
 	}
 
-	return stacks, nil
+	for index, val := range stacks {
+		stacks[index] = reverseSlice(val)
+	}
+
+	// we have our stacks, now we need to process instructions
+	count := []int {}
+	start := []int {}
+	end := []int {}
+
+	// scan in instructions
+	for scanner.Scan() {
+		line := scanner.Text()
+		if len(line) < 1 {continue}
+		words := strings.Split(line, " ")
+
+		c, err := strconv.Atoi(words[1])
+		if err != nil {
+			fmt.Println("Error converting instruction num from string to int")
+			return
+		}
+
+		s, err := strconv.Atoi(words[3])
+		if err != nil {
+			fmt.Println("Error converting instruction num from string to int")
+			return
+		}
+
+		e, err := strconv.Atoi(words[5])
+		if err != nil {
+			fmt.Println("Error converting instruction num from string to int")
+			return
+		}
+
+		count = append(count, c)
+		start = append(start, s)
+		end = append(end, e)
+	}
+
+	if part == 1 {
+		for index := range count {
+			for i := 0; i < count[index]; i++ {
+				// get a value from start and place in end
+				val := stacks[start[index] -1][len(stacks[start[index]-1]) - 1]
+				stacks[start[index]-1] = stacks[start[index]-1][:len(stacks[start[index]-1]) - 1]
+				stacks[end[index]-1] = append(stacks[end[index]-1], val)
+			}
+		}
+	} else {
+		for index := range count {
+			// get slice by cutting count off of start slice
+			temp := stacks[start[index] - 1][len(stacks[start[index] -1]) - count[index]:]
+			stacks[start[index] - 1] = stacks[start[index] - 1][:(len(stacks[start[index] -1]) - count[index])]
+			stacks[end[index] - 1] = append(stacks[end[index]-1], temp...)
+		}
+	}
+
+	for i := 0; i < 9; i++ {
+		fmt.Println("Stack: ", i + 1, " Top Value: ", stacks[i][len(stacks[i]) - 1])
+	}
 
 }
 
 func reverseSlice(slice []string) []string {
-	newStack := []string{}
+	newSlice := []string {}
+
 	for i := len(slice) - 1; i >= 0; i-- {
-		newStack = append(newStack, slice[i])
+		newSlice = append(newSlice, slice[i])
 	}
-	return newStack
+
+	return newSlice
 }
