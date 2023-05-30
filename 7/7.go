@@ -99,9 +99,17 @@ func main() {
 		}
 	}
 
+	// Part ONE:
 	calcDirSizes(root)
-	// PrintFileTree(root, "")
 	fmt.Println("Advent of Code Day 7 Part 1 Result: ", calculateTotalSize(root))
+	
+	// Part TWO:
+	spaceRequired := (30000000 - (70000000 - root.Size))
+	sizeOfDirToDelete := findSmallestToDelete(root, spaceRequired)
+	fmt.Println("Advent of Code Day 7 Part 2 Result: ", sizeOfDirToDelete.Size)
+
+	// Use to print out the tree for debug
+	// PrintFileTree(root, "")
 }
 
 func calcDirSizes(node *FileNode) int {
@@ -134,4 +142,23 @@ func calculateTotalSize(node *FileNode) int {
 	}
 
 	return totalSize
+}
+
+func findSmallestToDelete(node *FileNode, spaceRequired int) *FileNode {
+	smallest := &FileNode{Size: 70000001}
+	
+	if node.Dir {
+		if node.Size >= spaceRequired && node.Size < smallest.Size {
+			smallest = node
+		}
+
+		for _, child := range node.Children {
+			cDir := findSmallestToDelete(child, spaceRequired)
+			if cDir.Size < smallest.Size {
+				smallest = cDir
+			}
+		}
+	}
+
+	return smallest
 }

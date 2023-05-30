@@ -727,7 +727,8 @@ dir dvqtdsr
 dir pggh
 132530 stj.ldg
 3436 vwpdb.gmf
-b$ cd bgmfwb
+dir zlzjmjvn
+$ cd bgmfwb
 $ ls
 dir bqzdswtj
 6018 jrcgrvp
