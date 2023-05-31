@@ -32,14 +32,14 @@ func main() {
 				fmt.Println("Str conv error: ", err)
 				return
 			}
-			
+
 			row = append(row, val)
 		}
 
 		trees = append(trees, row)
 	}
 
-	total := 0	
+	total := 0
 
 	// For every tree, check if it's visible. If visible -> increment total
 	for i, row := range trees {
@@ -86,6 +86,7 @@ func isTreeVisable(trees *[][]int, row int, col int) bool {
 	for i := col - 1; i >= 0; i-- {
 		if tSlice[row][i] >= tSlice[row][col] {
 			left = true
+			break
 		}
 	}
 
@@ -93,6 +94,7 @@ func isTreeVisable(trees *[][]int, row int, col int) bool {
 	for i := col + 1; i < length; i++ {
 		if tSlice[row][i] >= tSlice[row][col] {
 			right = true
+			break
 		}
 	}
 
@@ -100,6 +102,7 @@ func isTreeVisable(trees *[][]int, row int, col int) bool {
 	for i := row - 1; i >= 0; i-- {
 		if tSlice[i][col] >= tSlice[row][col] {
 			up = true
+			break
 		}
 	}
 
@@ -107,6 +110,7 @@ func isTreeVisable(trees *[][]int, row int, col int) bool {
 	for i := row + 1; i < height; i++ {
 		if tSlice[i][col] >= tSlice[row][col] {
 			down = true
+			break
 		}
 	}
 
